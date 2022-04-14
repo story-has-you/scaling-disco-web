@@ -1,14 +1,12 @@
 import {SettingDrawer} from '@ant-design/pro-layout';
 import {PageLoading} from '@ant-design/pro-layout';
-import {history, Link} from 'umi';
+import {history} from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import {currentUser as queryCurrentUser} from './services/api';
-import {BookOutlined, LinkOutlined} from '@ant-design/icons';
 import defaultSettings from '../config/defaultSettings';
 import {message} from 'antd';
 
-const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 /** 获取用户信息比较慢的时候会展示一个 loading */
 
@@ -62,18 +60,7 @@ export const layout = ({initialState, setInitialState}) => {
         history.push(loginPath);
       }
     },
-    links: isDev
-      ? [
-        <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-          <LinkOutlined/>
-          <span>OpenAPI 文档</span>
-        </Link>,
-        <Link to="/~docs" key="docs">
-          <BookOutlined/>
-          <span>业务组件文档</span>
-        </Link>,
-      ]
-      : [],
+    links: [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
@@ -116,10 +103,12 @@ export const request = {
   responseInterceptors: [async response => {
     if (response && response.status) {
       const result = await response.json();
-      console.log(result);
       const {status} = response;
       if (status === 401) {
         message.error('未认证token, 重新登录');
+      }
+      if (status === 404) {
+        message.error('请求的资源不存在');
       }
       if (result.status !== 200) {
         message.error(result.message);
