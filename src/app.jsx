@@ -1,9 +1,8 @@
-import {SettingDrawer} from '@ant-design/pro-layout';
-import {PageLoading} from '@ant-design/pro-layout';
+import {PageLoading, SettingDrawer} from '@ant-design/pro-layout';
 import {history} from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import {currentUser as queryCurrentUser} from './services/api';
+import {currentUser as queryCurrentUser} from './services/user';
 import defaultSettings from '../config/defaultSettings';
 import {message} from 'antd';
 
@@ -21,8 +20,7 @@ export const initialStateConfig = {
 export async function getInitialState() {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
-      return msg.data;
+      return await queryCurrentUser();
     } catch (error) {
       history.push(loginPath);
     }
@@ -93,7 +91,8 @@ export const request = {
   requestInterceptors: [(url, options) => {
     const token = localStorage.getItem('token');
     const headers = {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`,
+      'source': 'scaling-disco-web'
     }
     return {
       url: `${url}`,
@@ -106,6 +105,7 @@ export const request = {
       const {status} = response;
       if (status === 401) {
         message.error('未认证token, 重新登录');
+        history.push(loginPath);
       }
       if (status === 404) {
         message.error('请求的资源不存在');
@@ -113,7 +113,7 @@ export const request = {
       if (result.status !== 200) {
         message.error(result.message);
       }
-      return result;
+      return result.data;
     } else {
       message.error('您的网络发生异常, 无法连接服务器')
       return response;

@@ -4,7 +4,8 @@ import React, {useState} from 'react';
 import {LoginForm, ProFormCheckbox, ProFormText} from '@ant-design/pro-form';
 import {history, useModel} from 'umi';
 import Footer from '@/components/Footer';
-import {login} from '@/services/api';
+import {login} from '@/services/user';
+import {tree} from '@/services/menu';
 import styles from './index.less';
 
 const LoginMessage = ({content}) => (
@@ -35,11 +36,15 @@ const Login = () => {
     try {
       // 登录
       const msg = await login({...values, type});
-      if (msg.status === 200) {
+      if (msg) {
         const defaultLoginSuccessMessage = '登录成功！';
         message.success(defaultLoginSuccessMessage);
-        localStorage.setItem('token', msg.data)
+        localStorage.setItem('token', msg)
         await fetchUserInfo();
+        const menuTree = await tree();
+        if (menuTree) {
+          localStorage.setItem('menuTree', JSON.stringify(menuTree));
+        }
         /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
         const {query} = history.location;
@@ -67,8 +72,8 @@ const Login = () => {
             await handleSubmit(values);
           }}
         >
-          {status === 'error' && loginType === 'account' && (
-            <LoginMessage content={'错误的用户名和密码(admin/ant.design)'}/>
+          {status === 'error' && (
+            <LoginMessage content={'错误的用户名和密码(admin/123456)'}/>
           )}
           {
             <>
