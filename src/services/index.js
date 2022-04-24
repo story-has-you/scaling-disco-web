@@ -3,9 +3,11 @@
 /* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
-import * as api from './user';
+import * as user from './user';
 import * as menu from './menu';
+import * as base from './base';
 export default {
-  api,
+  user,
   menu,
+  base,
 };
