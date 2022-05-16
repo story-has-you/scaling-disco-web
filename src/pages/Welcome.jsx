@@ -5,7 +5,25 @@ import Crud from "@/components/Crud";
 const Welcome = () => {
   const params = {
     url: '/api/user',
-    data: {}
+    data: {},
+    headerColums: [
+      {
+        title: '用户名',
+        dataIndex: 'username',
+        ellipsis: true,
+        editable: false
+      },
+      {
+        title: '手机号',
+        dataIndex: 'phone',
+        ellipsis: true,
+      },
+      {
+        title: '邮箱',
+        dataIndex: 'email',
+        ellipsis: true,
+      },
+    ]
   }
   return (
     <PageContainer>
